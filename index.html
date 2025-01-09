@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Contador de Ejercicio</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
@@ -104,69 +104,68 @@
     <div class="status" id="status">Día 0/360</div>
 
     <!-- Scripts de Firebase -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
-      import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js";
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js"></script>
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbMLQj11LiNppZGzDPUgqVxGJK0aVyIq8",
+            authDomain: "counter-27bac.firebaseapp.com",
+            databaseURL: "https://counter-27bac-default-rtdb.firebaseio.com/",  // Aquí es donde agregamos tu URL de Firebase Database
+            projectId: "counter-27bac",
+            storageBucket: "counter-27bac.appspot.com",
+            messagingSenderId: "55234684405",
+            appId: "1:55234684405:web:81264c6a1e93f002c6ecbc",
+            measurementId: "G-4LC0KD6MHG"
+        };
 
-      // Configuración de Firebase
-      const firebaseConfig = {
-          apiKey: "AIzaSyDbMLQj11LiNppZGzDPUgqVxGJK0aVyIq8",
-          authDomain: "counter-27bac.firebaseapp.com",
-          databaseURL: "https://counter-27bac-default-rtdb.firebaseio.com/",  // Aquí es donde agregamos tu URL de Firebase Database
-          projectId: "counter-27bac",
-          storageBucket: "counter-27bac.appspot.com",
-          messagingSenderId: "55234684405",
-          appId: "1:55234684405:web:81264c6a1e93f002c6ecbc",
-          measurementId: "G-4LC0KD6MHG"
-      };
+        // Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-      // Inicializar Firebase
-      const app = initializeApp(firebaseConfig);
-      const database = getDatabase(app);
+        // Referencia al contador en la base de datos
+        const counterRef = firebase.database().ref('contador');
 
-      // Referencia al contador en la base de datos
-      const counterRef = ref(database, 'contador');
+        let count = 0; // Contador local
+        const counterElement = document.getElementById('counter');
+        const statusElement = document.getElementById('status');
 
-      let count = 0; // Contador local
-      const counterElement = document.getElementById('counter');
-      const statusElement = document.getElementById('status');
+        const updateCounter = () => {
+            counterElement.textContent = count;
+            statusElement.textContent = `Día ${count}/360`;
+            counterElement.style.animation = 'none';
+            setTimeout(() => {
+                counterElement.style.animation = 'numAnimation 0.2s ease-in-out forwards';
+            }, 10);
+        };
 
-      const updateCounter = () => {
-          counterElement.textContent = count;
-          statusElement.textContent = `Día ${count}/360`;
-          counterElement.style.animation = 'none';
-          setTimeout(() => {
-              counterElement.style.animation = 'numAnimation 0.2s ease-in-out forwards';
-          }, 10);
-      };
+        // Leer el valor inicial del contador desde Firebase
+        counterRef.on('value', (snapshot) => {
+            count = snapshot.val() || 0; // Si no hay datos, inicializa en 0
+            updateCounter();
+        });
 
-      // Leer el valor inicial del contador desde Firebase
-      onValue(counterRef, (snapshot) => {
-          count = snapshot.val() || 0; // Si no hay datos, inicializa en 0
-          updateCounter();
-      });
+        // Incrementar
+        document.getElementById('increment').addEventListener('click', () => {
+            if (count < 360) {
+                count++;
+                counterRef.set(count); // Guardar en Firebase
+            }
+        });
 
-      // Incrementar
-      document.getElementById('increment').addEventListener('click', () => {
-          if (count < 360) {
-              count++;
-              set(counterRef, count); // Guardar en Firebase
-          }
-      });
+        // Decrementar
+        document.getElementById('decrement').addEventListener('click', () => {
+            if (count > 0) {
+                count--;
+                counterRef.set(count); // Guardar en Firebase
+            }
+        });
 
-      // Decrementar
-      document.getElementById('decrement').addEventListener('click', () => {
-          if (count > 0) {
-              count--;
-              set(counterRef, count); // Guardar en Firebase
-          }
-      });
-
-      // Resetear
-      document.getElementById('reset').addEventListener('click', () => {
-          count = 0;
-          set(counterRef, count); // Guardar en Firebase
-      });
+        // Resetear
+        document.getElementById('reset').addEventListener('click', () => {
+            count = 0;
+            counterRef.set(count); // Guardar en Firebase
+        });
     </script>
 
 </body>
