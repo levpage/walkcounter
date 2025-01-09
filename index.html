@@ -168,35 +168,26 @@
           set(counterRef, count); // Guardar en Firebase
       });
 
-      // Desactivar zoom con doble toque
-      let lastTouch = 0;
-      document.body.addEventListener('touchstart', function(e) {
-          const now = Date.now();
-          if (now - lastTouch <= 300) { // 300 ms entre toques
+      // Prevenir el zoom (evento touchstart)
+      document.body.addEventListener('touchstart', (e) => {
+          // Si hay más de un dedo tocando la pantalla, desactivar el zoom
+          if (e.touches.length > 1) {
               e.preventDefault();
           }
-          lastTouch = now;
       });
 
-      // Desactivar zoom con el gesto de pellizcar
-      document.body.addEventListener('touchmove', function(e) {
-          if (e.scale !== 1) { // Si el gesto de pellizcar está activo
+      // Desactivar el zoom usando gestures (cuando se hace "pinch to zoom")
+      let lastTouchEnd = 0;
+      document.body.addEventListener('touchend', (e) => {
+          let now = (new Date()).getTime();
+          if (now - lastTouchEnd <= 300) {
               e.preventDefault();
           }
-      }, { passive: false });
+          lastTouchEnd = now;
+      });
 
-      // Desactivar el zoom en el navegador
-      document.addEventListener('gesturestart', function(e) {
+      document.body.addEventListener('gesturestart', (e) => {
           e.preventDefault();
-      });
-
-      // Evitar doble toque para zoom
-      document.body.addEventListener('touchend', function(e) {
-          let timeBetweenTaps = e.timeStamp - lastTouch;
-          if (timeBetweenTaps <= 200 && timeBetweenTaps > 0) {
-              e.preventDefault(); // Desactiva el zoom de doble toque
-          }
-          lastTouch = e.timeStamp;
       });
     </script>
 
