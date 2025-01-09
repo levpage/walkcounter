@@ -190,6 +190,14 @@
           e.preventDefault();
       });
 
+      // Evitar doble toque para zoom
+      document.body.addEventListener('touchend', function(e) {
+          let timeBetweenTaps = e.timeStamp - lastTouch;
+          if (timeBetweenTaps <= 200 && timeBetweenTaps > 0) {
+              e.preventDefault(); // Desactiva el zoom de doble toque
+          }
+          lastTouch = e.timeStamp;
+      });
     </script>
 
 </body>
