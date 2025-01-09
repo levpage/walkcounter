@@ -103,37 +103,68 @@
     </div>
     <div class="status" id="status">Día 0/360</div>
 
+    <!-- Scripts de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <script>
-        let count = localStorage.getItem('count') ? parseInt(localStorage.getItem('count')) : 0; // Cargar desde LocalStorage si existe
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_DOMINIO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_STORAGE_BUCKET",
+            messagingSenderId: "TU_ID",
+            appId: "TU_APP_ID"
+        };
+
+        // Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Referencia al contador en la base de datos
+        const counterRef = firebase.database().ref('contador');
+
+        let count = 0; // Contador local
         const counterElement = document.getElementById('counter');
         const statusElement = document.getElementById('status');
 
         const updateCounter = () => {
             counterElement.textContent = count;
             statusElement.textContent = `Día ${count}/360`;
-            localStorage.setItem('count', count); // Guardar el contador en LocalStorage
             counterElement.style.animation = 'none';
             setTimeout(() => {
                 counterElement.style.animation = 'numAnimation 0.2s ease-in-out forwards';
             }, 10);
         };
 
+        // Leer el valor inicial del contador desde Firebase
+        counterRef.on('value', (snapshot) => {
+            count = snapshot.val() || 0; // Si no hay datos, inicializa en 0
+            updateCounter();
+        });
+
+        // Incrementar
         document.getElementById('increment').addEventListener('click', () => {
-            if (count < 360) count++;
-            updateCounter();
+            if (count < 360) {
+                count++;
+                counterRef.set(count); // Guardar en Firebase
+            }
         });
 
+        // Decrementar
         document.getElementById('decrement').addEventListener('click', () => {
-            if (count > 0) count--;
-            updateCounter();
+            if (count > 0) {
+                count--;
+                counterRef.set(count); // Guardar en Firebase
+            }
         });
 
+        // Resetear
         document.getElementById('reset').addEventListener('click', () => {
             count = 0;
-            updateCounter();
+            counterRef.set(count); // Guardar en Firebase
         });
-
-        updateCounter(); // Inicializar el contador al cargar la página
     </script>
 
 </body>
