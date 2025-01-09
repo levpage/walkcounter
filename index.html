@@ -111,7 +111,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyDbMLQj11LiNppZGzDPUgqVxGJK0aVyIq8",
             authDomain: "counter-27bac.firebaseapp.com",
-            databaseURL: "https://counter-27bac-default-rtdb.firebaseio.com/",
+            databaseURL: "https://counter-27bac-default-rtdb.firebaseio.com/",  // Aquí es donde agregamos tu URL de Firebase Database
             projectId: "counter-27bac",
             storageBucket: "counter-27bac.appspot.com",
             messagingSenderId: "55234684405",
@@ -121,11 +121,10 @@
 
         // Inicializar Firebase
         const app = firebase.initializeApp(firebaseConfig);
-        console.log("Firebase inicializado correctamente");
         const database = firebase.database();
 
         // Referencia al contador en la base de datos
-        const counterRef = database.ref('contador');
+        const counterRef = firebase.database().ref('contador');
 
         let count = 0; // Contador local
         const counterElement = document.getElementById('counter');
