@@ -112,7 +112,7 @@
       const firebaseConfig = {
           apiKey: "AIzaSyDbMLQj11LiNppZGzDPUgqVxGJK0aVyIq8",
           authDomain: "counter-27bac.firebaseapp.com",
-          databaseURL: "https://counter-27bac-default-rtdb.firebaseio.com/",  // Aquí es donde agregamos tu URL de Firebase Database
+          databaseURL: "https://counter-27bac-default-rtdb.firebaseio.com/",  
           projectId: "counter-27bac",
           storageBucket: "counter-27bac.appspot.com",
           messagingSenderId: "55234684405",
@@ -168,27 +168,30 @@
           set(counterRef, count); // Guardar en Firebase
       });
 
-      // Prevenir el zoom (evento touchstart)
-      document.body.addEventListener('touchstart', (e) => {
-          // Si hay más de un dedo tocando la pantalla, desactivar el zoom
+      // Doble toque con touchstart
+      let lastTap = 0;
+      document.getElementById('increment').addEventListener('touchstart', (e) => {
+          const currentTime = new Date().getTime();
+          const timeDiff = currentTime - lastTap;
+
+          if (timeDiff < 300 && timeDiff > 0) {
+              // Detectar el doble toque
+              if (count < 360) {
+                  count++;
+                  set(counterRef, count); // Guardar en Firebase
+              }
+          }
+          lastTap = currentTime;
+      });
+      
+      // Permitir el zoom táctil
+      document.body.addEventListener('touchstart', function(e) {
           if (e.touches.length > 1) {
+              // Bloquear zoom por gestos táctiles
               e.preventDefault();
           }
-      });
+      }, { passive: false });
 
-      // Desactivar el zoom usando gestures (cuando se hace "pinch to zoom")
-      let lastTouchEnd = 0;
-      document.body.addEventListener('touchend', (e) => {
-          let now = (new Date()).getTime();
-          if (now - lastTouchEnd <= 300) {
-              e.preventDefault();
-          }
-          lastTouchEnd = now;
-      });
-
-      document.body.addEventListener('gesturestart', (e) => {
-          e.preventDefault();
-      });
     </script>
 
 </body>
