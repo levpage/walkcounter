@@ -167,6 +167,22 @@
           count = 0;
           set(counterRef, count); // Guardar en Firebase
       });
+
+      // Deshabilitar el zoom al hacer doble tap (para dispositivos móviles)
+      document.body.addEventListener('touchstart', (event) => {
+        if (event.touches.length > 1) {
+            event.preventDefault();  // Desactivar el zoom
+        }
+      });
+
+      document.body.addEventListener('touchend', (event) => {
+        let lastTouch = 0;
+        const now = new Date().getTime();
+        if (now - lastTouch <= 300) {
+            event.preventDefault();  // Desactivar el zoom
+        }
+        lastTouch = now;
+      });
     </script>
 
 </body>
