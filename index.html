@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contador de Ejercicio</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
@@ -168,21 +168,28 @@
           set(counterRef, count); // Guardar en Firebase
       });
 
-      // Deshabilitar el zoom al hacer doble tap (para dispositivos móviles)
-      document.body.addEventListener('touchstart', (event) => {
-        if (event.touches.length > 1) {
-            event.preventDefault();  // Desactivar el zoom
-        }
+      // Desactivar zoom con doble toque
+      let lastTouch = 0;
+      document.body.addEventListener('touchstart', function(e) {
+          const now = Date.now();
+          if (now - lastTouch <= 300) { // 300 ms entre toques
+              e.preventDefault();
+          }
+          lastTouch = now;
       });
 
-      document.body.addEventListener('touchend', (event) => {
-        let lastTouch = 0;
-        const now = new Date().getTime();
-        if (now - lastTouch <= 300) {
-            event.preventDefault();  // Desactivar el zoom
-        }
-        lastTouch = now;
+      // Desactivar zoom con el gesto de pellizcar
+      document.body.addEventListener('touchmove', function(e) {
+          if (e.scale !== 1) { // Si el gesto de pellizcar está activo
+              e.preventDefault();
+          }
+      }, { passive: false });
+
+      // Desactivar el zoom en el navegador
+      document.addEventListener('gesturestart', function(e) {
+          e.preventDefault();
       });
+
     </script>
 
 </body>
